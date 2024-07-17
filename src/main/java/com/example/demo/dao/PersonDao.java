@@ -3,6 +3,7 @@ package com.example.demo.dao;
 import com.example.demo.model.Person;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface PersonDao {
@@ -22,4 +23,7 @@ Bağımlılıkların Azaltılması: İş mantığı ve veri erişim kodu arasın
         return insertPerson(uid, person);
     }
     List<Person> getAllPerson();
+    int deletePerson(UUID id);
+    int updatePersonById(UUID id, Person person);
+    Optional<Person> findPersonById(UUID id);
 }

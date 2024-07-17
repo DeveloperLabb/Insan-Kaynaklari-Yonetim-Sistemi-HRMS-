@@ -6,7 +6,7 @@ import java.util.UUID;
 //Database Section
 public class Person {
     private final UUID id;
-    private final String name;
+    private String name;
     public Person(@JsonProperty("id") UUID id,@JsonProperty("name") String name) {//postmande json dosyası gönderirken algılaması için.
         this.id = id;
         this.name = name;
@@ -18,6 +18,10 @@ public class Person {
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Override
