@@ -2,10 +2,12 @@ package com.example.demo.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import javax.validation.constraints.NotBlank;
 import java.util.UUID;
 //Database Section
 public class Person {
     private final UUID id;
+    @NotBlank
     private String name;
     public Person(@JsonProperty("id") UUID id,@JsonProperty("name") String name) {//postmande json dosyası gönderirken algılaması için.
         this.id = id;
