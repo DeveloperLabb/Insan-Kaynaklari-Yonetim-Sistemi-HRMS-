@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("api/v1/person")
 public class PersonController {
@@ -18,7 +20,13 @@ public class PersonController {
         this.personService = personService;
     }
     @PostMapping
+    @RequestMapping("/addPerson")
     public int addPerson(@RequestBody Person person) {
         return personService.addPerson(person);
+    }
+    @PostMapping
+    @RequestMapping("/getAllPerson")
+    public List<Person> getAllPerson() {
+        return personService.getAllPerson();
     }
 }

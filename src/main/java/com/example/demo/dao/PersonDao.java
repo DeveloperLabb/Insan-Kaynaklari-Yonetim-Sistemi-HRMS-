@@ -2,6 +2,7 @@ package com.example.demo.dao;
 
 import com.example.demo.model.Person;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface PersonDao {
@@ -20,4 +21,5 @@ Bağımlılıkların Azaltılması: İş mantığı ve veri erişim kodu arasın
         UUID uid = UUID.randomUUID();
         return insertPerson(uid, person);
     }
+    List<Person> getAllPerson();
 }
