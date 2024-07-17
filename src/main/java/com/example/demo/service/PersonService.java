@@ -14,7 +14,7 @@ import java.util.UUID;
 public class PersonService {
     private final PersonDao personDao;
     @Autowired
-    public PersonService(@Qualifier("fakeDao") PersonDao personDao) {//Qualifier fakePersonDataAccess ile bağlı olduğu için böyle yaptık.
+    public PersonService(@Qualifier("mySQL") PersonDao personDao) {//Qualifier fakePersonDataAccess ile bağlı olduğu için böyle yaptık.
         //Ona da aynı adı verdik birden fazla database e bağlanması için.
         this.personDao = personDao;
     }
