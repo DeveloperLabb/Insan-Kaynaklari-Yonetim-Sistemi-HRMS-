@@ -13,6 +13,10 @@ public class Person {
         this.id = id;
         this.name = name;
     }
+    public Person(String id,String name) {//postmande json dosyası gönderirken algılaması için.
+        this.id = UUID.fromString(id);
+        this.name = name;
+    }
 
     public UUID getId() {
         return id;
