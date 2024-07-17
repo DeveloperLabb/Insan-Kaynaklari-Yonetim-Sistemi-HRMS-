@@ -4,10 +4,7 @@ import com.example.demo.model.Person;
 import com.example.demo.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -23,6 +20,11 @@ public class PersonController {
     @RequestMapping("/addPerson")
     public int addPerson(@RequestBody Person person) {
         return personService.addPerson(person);
+    }
+    @PostMapping
+    @RequestMapping("/addPersons")
+    public int addPerson(@RequestBody List<Person> persons) {
+        return personService.addPerson(persons);
     }
     @PostMapping
     @RequestMapping("/getAllPerson")

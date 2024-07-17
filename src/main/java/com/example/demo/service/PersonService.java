@@ -20,6 +20,12 @@ public class PersonService {
     public int addPerson(Person person) {
         return personDao.insertPerson(person);
     }
+    public int addPerson(List<Person> persons) {
+        for (Person person : persons) {
+            addPerson(person);
+        }
+        return persons.size();
+    }
     public List<Person> getAllPerson() {
         return personDao.getAllPerson();
     }
