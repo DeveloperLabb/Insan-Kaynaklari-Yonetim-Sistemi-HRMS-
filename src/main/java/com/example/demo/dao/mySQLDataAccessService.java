@@ -88,11 +88,55 @@ public class mySQLDataAccessService implements PersonDao{
 
     @Override
     public int updatePersonById(UUID id, Person person) {
-        return 0;
+        String sql = "UPDATE person SET name = ? WHERE id = ?";
+        return jdbcTemplate.update(sql, person.getName(), id.toString());
     }
+
 
     @Override
     public Optional<Person> findPersonById(UUID id) {
-        return Optional.empty();
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        Optional<Person> person = Optional.empty();
+        try {
+            conn = jdbcTemplate.getDataSource().getConnection();
+            ps = conn.prepareStatement("SELECT * FROM person WHERE id = ?");
+            ps.setString(1,id.toString());
+            rs = ps.executeQuery();
+
+            // ResultSet üzerinde döngü ile veri işleme örneği
+            while (rs.next()) {
+                // Her bir sütundan veri alma örneği
+                String name = rs.getString("name");
+                person = Optional.ofNullable(new Person(id,name));
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching data from database", e);
+        } finally {
+            // ResultSet, PreparedStatement ve Connection kapatma
+            if (rs != null) {
+                try {
+                    rs.close();
+                } catch (SQLException e) {
+                    throw new RuntimeException("Error closing ResultSet", e);
+                }
+            }
+            if (ps != null) {
+                try {
+                    ps.close();
+                } catch (SQLException e) {
+                    throw new RuntimeException("Error closing PreparedStatement", e);
+                }
+            }
+            if (conn != null) {
+                try {
+                    conn.close();
+                } catch (SQLException e) {
+                    throw new RuntimeException("Error closing Connection", e);
+                }
+            }
+        }
+        return person;
     }
 }
