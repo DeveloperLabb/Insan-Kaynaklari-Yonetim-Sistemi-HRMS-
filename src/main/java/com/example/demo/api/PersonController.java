@@ -19,14 +19,17 @@ public class PersonController {
     public PersonController(@Qualifier("personService") PersonService personService) {//Dependency injection
         this.personService = personService;
     }
+    @CrossOrigin(origins = "http://localhost:5500")
     @PostMapping("/addPerson")
     public int addPerson(@Valid @NonNull @RequestBody Person person) {
         return personService.addPerson(person);
     }
+    @CrossOrigin(origins = "http://localhost:5500")
     @PostMapping("/addPersons")
     public int addPerson(@Valid @NonNull @RequestBody List<Person> persons) {
         return personService.addPerson(persons);
     }
+    @CrossOrigin(origins = "http://localhost:5500")//Başka port üzerinden bağlantı izni vermek.
     @GetMapping("/getAllPerson")//Aynı endpoint üzerinden farklı mapping işlemleri yapılabilir ancak aynı işlemler aynı endpointte yapılamaz.
     public List<Person> getAllPerson() {
         return personService.getAllPerson();
