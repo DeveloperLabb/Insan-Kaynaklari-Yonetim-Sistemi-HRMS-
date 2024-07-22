@@ -1,47 +1,60 @@
-function deleteChildElements(parentElement) {
-    while (parentElement.firstChild) {
-        parentElement.removeChild(parentElement.firstChild);
-    }
-}
-function getPersons(){
-    document.addEventListener("DOMContentLoaded", function() {
-        document.getElementById("getPersons").addEventListener("click", function() {
-            fetch('http://localhost:8080/api/v1/person/getAllPerson', {
-                method: 'GET'
-            })
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok ' + response.statusText);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    // JSON dizisini işleme
-                    const jsonArray = data;
-                    // `responseData` öğesini seçme
-                    const responseDataElement = document.getElementById("responseData");
-                    // Liste oluşturma
-                    deleteChildElements(responseDataElement);
-                    const ul = document.createElement('ul');
-                    jsonArray.forEach(person => {
-                        const li = document.createElement('li');
-                        li.textContent = `Name: ${person.name}, id: ${person.id}`;
-                        ul.appendChild(li);
-                    });
-                    // Listeyi `responseData` öğesine ekleme
-                    responseDataElement.appendChild(ul);
+var table;
+document.addEventListener("DOMContentLoaded", function() {
+    getPersons();
+});
 
-                })
-                .catch(error => {
-                    console.error('Error:', error); // Hata mesajını konsola yazdır
-                });
+function getPersons() {
+    fetch('http://localhost:8080/api/v1/person/getAllPerson', {
+        method: 'GET'
+    })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // JSON dizisini işleme
+            const jsonArray = data;
+            // `personTable`'ın `tbody` öğesini seçme
+            const personDataList = document.querySelector("#personTable > tbody");
+
+            // Tabloyu temizleme (isteğe bağlı)
+            personDataList.innerHTML = '';
+
+            // Verileri tabloya ekleme
+            jsonArray.forEach(person => {
+                // Yeni bir `tr` elementi oluşturma
+                const tr = document.createElement('tr');
+
+                // `name` ve `id` için `td` elementleri oluşturma
+                const td1 = document.createElement('td');
+                td1.textContent = person.name;
+                tr.appendChild(td1);
+
+                const td2 = document.createElement('td');
+                td2.textContent = person.id;
+                tr.appendChild(td2);
+
+                // `tr` elementini `tbody`'ye ekleme
+                personDataList.appendChild(tr);
+            });
+
+            // DataTables'ı başlatma
+            table = $('#personTable').DataTable({
+                select: {
+                    style: 'single' // Çoklu seçim modunu etkinleştirir
+                }
+            })
+        })
+        .catch(error => {
+            console.error('Error:', error); // Hata mesajını konsola yazdır
         });
-    });
 }
-getPersons();
+
 function addPerson() {
     // Input elemanını seçme
-    var nameInput = document.getElementById('name');
+    var nameInput = document.getElementById('textField-ekle');
     // Input'un değerini alma
     var nameValue = nameInput.value;
 
@@ -58,6 +71,41 @@ function addPerson() {
         },
         body: JSON.stringify({ name: nameValue }) // JSON formatında veri gönderir
     })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log(data); // Veriyi işleyin
+        alert(`${nameValue} kullanıcısı başarıyla eklendi.`);
+        // DataTables'ı başlatma
+        document.getElementById('textField-ekle').value="";
+        location.reload();
+    })
+    .catch(error => {
+        console.error('There was a problem with the fetch operation:', error);
+    });
+}
+function deletePerson(){
+        // Seçili satırların sayısını al
+        var selectedRowsCount = table.rows({ selected: true }).count();
+        
+        // Eğer seçili satır yoksa uyarı göster
+        if (selectedRowsCount === 0) {
+            alert("Öncelikle silinecek satırı seçiniz.");
+            return; // İşlemi durdur
+        }
+
+        // Seçili satırın verilerini al
+        var selectedRowData = table.row({ selected: true }).data();
+        var id = selectedRowData[1]; // ID sütunundan alınır
+
+        // DELETE isteği gönderme
+        fetch(`http://localhost:8080/api/v1/person/${id}`, {
+            method: 'DELETE'
+        })
         .then(response => {
             if (!response.ok) {
                 throw new Error('Network response was not ok');
@@ -66,7 +114,9 @@ function addPerson() {
         })
         .then(data => {
             console.log(data); // Veriyi işleyin
-            alert('Person added successfully');
+            alert(`${id} kullanıcısı başarıyla silindi.`);
+            // Satırı tablodan kaldır
+            table.row({ selected: true }).remove().draw();
         })
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);

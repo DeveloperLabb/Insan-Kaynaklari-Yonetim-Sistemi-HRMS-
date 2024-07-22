@@ -1,0 +1,20 @@
+.shadow-hover {
+    transition: box-shadow 0.3s ease; /* Gölge geçişi için yumuşatma efekti */
+    border-radius: 10px;
+}
+.shadow-hover:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Gölge efekti */
+}
+.container-fluid .col-sm-9,.container-fluid .col-sm-3{
+    border: 2px solid white;
+    border-radius: 10px;
+}
+.fit-button {
+    width: 100%;
+    height: 100%;
+    font-size: large;
+}
+#button-ekle:hover{
+    background-color: black;
+    color: white;
+}
