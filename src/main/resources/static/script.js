@@ -1,8 +1,15 @@
 var table;
+var idToUpdate;
+var iframeDocument;
 document.addEventListener("DOMContentLoaded", function() {
     getPersons();
 });
-
+document.addEventListener('DOMContentLoaded', function() {
+    var iframe = document.getElementById('update-iframe');
+    iframe.onload = function() {
+        console.log('iframe içeriği yüklendi.');
+    };
+});
 function getPersons() {
     fetch('http://localhost:8080/api/v1/person/getAllPerson', {
         method: 'GET'
@@ -121,4 +128,31 @@ function deletePerson(){
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
         });
+}
+
+function showOverlay() {
+    // Seçili satırların sayısını al
+    var selectedRowsCount = table.rows({ selected: true }).count();
+    // Eğer seçili satır yoksa uyarı göster
+    if (selectedRowsCount === 0) {
+        alert("Öncelikle güncellenecek satırı seçiniz.");
+        return; // İşlemi durdur
+    }
+    var selectedRowData = table.row({ selected: true }).data();
+    var name = selectedRowData[0];// name 
+    var id = selectedRowData[1]; // ID sütunundan alınır
+    idToUpdate=id;
+    var iframe = document.getElementById('update-iframe');
+    iframeDocument = iframe.contentDocument;
+    iframeDocument.getElementById("update-person-info-name").textContent = `${name}` ;
+    iframeDocument.getElementById("update-person-info-id").textContent = `${id}` ;
+    document.getElementById('overlay').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    
+}
+
+function hideOverlay() {
+    document.getElementById('overlay').style.display = 'none';
+    document.body.style.overflow = '';
+    location.reload();
 }

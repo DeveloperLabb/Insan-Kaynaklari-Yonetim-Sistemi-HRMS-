@@ -10,8 +10,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 import java.util.UUID;
-@CrossOrigin(origins = "*")
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("api/v1/person")
 public class PersonController {
