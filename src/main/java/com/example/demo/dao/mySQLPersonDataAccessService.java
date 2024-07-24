@@ -13,12 +13,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-@Repository("mySQL")
-public class mySQLDataAccessService implements PersonDao{
+@Repository("mySQLPerson")
+public class mySQLPersonDataAccessService implements PersonDao{
 
     private final JdbcTemplate jdbcTemplate;
     @Autowired
-    public mySQLDataAccessService(JdbcTemplate jdbcTemplate) {
+    public mySQLPersonDataAccessService(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
     @Override
