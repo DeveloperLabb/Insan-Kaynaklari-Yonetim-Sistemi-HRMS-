@@ -1,41 +1,29 @@
 package com.example.demo.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.Type;
 
 import javax.validation.constraints.NotBlank;
 import java.util.UUID;
-//Database Section
+
+@Entity
+@Table(name = "persons")
+@Data
+@NoArgsConstructor
 public class Person {
-    private final UUID id;
+
+    @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
+    @Column(name = "id", updatable = false, nullable = false)
+    private UUID id;
+
     @NotBlank
     private String name;
-    private String ownerID;//No implementation yet.
-    public Person(@JsonProperty("id") UUID id,@JsonProperty("name") String name) {//postmande json dosyası gönderirken algılaması için.
-        this.id = id;
-        this.name = name;
-    }
-    public Person(String id,String name) {//postmande json dosyası gönderirken algılaması için.
-        this.id = UUID.fromString(id);
-        this.name = name;
-    }
 
-    public UUID getId() {
-        return id;
-    }
+    private String ownerID; // İsteğe bağlı olarak ekleyebilirsiniz
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return "Person{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                '}';
-    }
 }

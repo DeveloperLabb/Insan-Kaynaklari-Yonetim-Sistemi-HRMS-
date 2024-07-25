@@ -1,4 +1,0 @@
-CREATE TABLE IF NOT EXISTS person (
-        id VARCHAR(100) PRIMARY KEY,
-        name VARCHAR(100) NOT NULL
-);
