@@ -9,6 +9,7 @@ public class Person {
     private final UUID id;
     @NotBlank
     private String name;
+    private String ownerID;//No implementation yet.
     public Person(@JsonProperty("id") UUID id,@JsonProperty("name") String name) {//postmande json dosyası gönderirken algılaması için.
         this.id = id;
         this.name = name;

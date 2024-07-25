@@ -28,6 +28,8 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	implementation 'org.projectlombok:lombok:1.18.30'  // En güncel sürümü kullanın
+	annotationProcessor 'org.projectlombok:lombok:1.18.30'  // En güncel sürümü kullanın
 }
 
 tasks.named('test') {

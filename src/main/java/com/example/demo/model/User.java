@@ -1,9 +1,16 @@
 package com.example.demo.model;
 
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
+@Data
+@NoArgsConstructor
 public class User {
 
     @Id
@@ -11,62 +18,13 @@ public class User {
     @Column(name = "id")
     private Long id;
 
-    @Column(nullable = false, unique = true, name ="email")
-    private String email;
+    @Column(nullable = false, unique = true, name ="username")
+    private String username;
 
-    @Column(nullable = false, name = "name")
-    private String name;
+    @Column(nullable = false, name = "password")
+    private String password;
 
-    @Column(unique = true, nullable = false, name = "auth_id")
-    private String oauth2Id;
-
-    public User(Long id, String email, String name, String oauth2Id) {
-        this.id = id;
-        this.email = email;
-        this.name = name;
-        this.oauth2Id = oauth2Id;
-    }
-    public User() {}
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
-    public String getOauth2Id() {
-        return oauth2Id;
-    }
-
-    public void setOauth2Id(String oauth2Id) {
-        this.oauth2Id = oauth2Id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", email='" + email + '\'' +
-                ", name='" + name + '\'' +
-                ", oauth2Id='" + oauth2Id + '\'' +
-                '}';
-    }
+    @ManyToMany(fetch = FetchType.EAGER,cascade = CascadeType.ALL)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id",referencedColumnName = "id"),inverseJoinColumns = @JoinColumn(name = "role_id",referencedColumnName = "id"))
+    private List<Roles> roles = new ArrayList<>();
 }
