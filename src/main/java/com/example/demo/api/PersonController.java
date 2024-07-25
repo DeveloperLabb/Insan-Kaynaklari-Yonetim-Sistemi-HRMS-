@@ -4,6 +4,7 @@ import com.example.demo.model.Person;
 import com.example.demo.service.PersonService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.http.ResponseEntity;
 import org.springframework.lang.NonNull;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +12,8 @@ import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static org.springframework.http.ResponseEntity.ok;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -23,8 +26,9 @@ public class PersonController {
     }
 
     @PostMapping("/addPerson")
-    public Person addPerson(@Valid @NonNull @RequestBody Person person) {
-        return personService.savePerson(person);
+    public ResponseEntity<Person> addPerson(@Valid @NonNull @RequestBody Person person) {
+        Person savedPerson = personService.savePerson(person);
+        return ResponseEntity.ok(savedPerson);
     }
 
     @GetMapping("/getAllPerson")//Aynı endpoint üzerinden farklı mapping işlemleri yapılabilir ancak aynı işlemler aynı endpointte yapılamaz.
