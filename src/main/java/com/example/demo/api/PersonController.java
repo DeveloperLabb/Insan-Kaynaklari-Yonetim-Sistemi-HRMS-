@@ -27,24 +27,31 @@ public class PersonController {
 
     @PostMapping("/addPerson")
     public ResponseEntity<Person> addPerson(@Valid @NonNull @RequestBody Person person) {
-        Person savedPerson = personService.savePerson(person);
-        return ResponseEntity.ok(savedPerson);
+        Optional<Person> savedPerson = personService.savePerson(person);
+        return savedPerson.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
     @GetMapping("/getAllPerson")//Aynı endpoint üzerinden farklı mapping işlemleri yapılabilir ancak aynı işlemler aynı endpointte yapılamaz.
-    public List<Person> getAllPerson() {
-        return personService.getAllPersons();
+    public ResponseEntity<List<Person>> getAllPerson() {
+        Optional<List<Person>> personList = personService.getAllPersons();
+        if (personList.isPresent()) {
+            return ResponseEntity.ok(personList.get());
+        }
+        return ResponseEntity.noContent().build();
     }
     @DeleteMapping("/{id}")
-    public Person deletePerson(@PathVariable("id") UUID id) {
-        return personService.deletePerson(id);
+    public ResponseEntity<Person> deletePerson(@PathVariable("id") UUID id) {
+        Optional<Person> deletedPerson = personService.deletePerson(id);
+        return deletedPerson.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
     @PutMapping("/{id}")
-    public Person updatePerson(@PathVariable("id") UUID id,@Valid @NonNull @RequestBody Person person) {
-        return personService.updatePerson(id,person);
+    public ResponseEntity<Person> updatePerson(@PathVariable("id") UUID id, @Valid @NonNull @RequestBody Person person) {
+        Optional<Person> updatedPerson = personService.updatePerson(id, person);
+        return updatedPerson.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
     @GetMapping(path = "{id}")
-    public Optional<Person> getPersonById(@PathVariable("id") UUID id) {
-        return personService.getPersonById(id);
+    public ResponseEntity<Person> getPersonById(@PathVariable("id") UUID id) {
+        Optional<Person> person = personService.getPersonById(id);
+        return person.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 }

@@ -19,29 +19,29 @@ public class PersonService {
         this.personRepository = personRepository;
     }
 
-    public Person savePerson(Person person) {
-        return personRepository.save(person);
+    public Optional<Person> savePerson(Person person) {
+        return Optional.of(personRepository.save(person));
     }
 
-    public List<Person> getAllPersons() {
-        return personRepository.findAll();
+    public Optional<List<Person>> getAllPersons() {
+        return Optional.of(personRepository.findAll());
     }
 
     public Optional<Person> getPersonById(UUID id) {
         return personRepository.findById(id);
     }
 
-    public Person deletePerson(UUID id) {
+    public Optional<Person> deletePerson(UUID id) {
         Person person = personRepository.findById(id).orElse(null);
         personRepository.deleteById(id);
-        return person;
+        return Optional.of(person);
     }
 
-    public Person updatePerson(UUID id, Person person) {
+    public Optional<Person> updatePerson(UUID id, Person person) {
         if (personRepository.existsById(id)) {
             person.setId(id);
-            return personRepository.save(person);
+            return Optional.of(personRepository.save(person));
         }
-        return null;
+        return Optional.empty();
     }
 }
