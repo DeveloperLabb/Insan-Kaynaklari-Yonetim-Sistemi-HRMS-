@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.LoginDTO;
 import com.example.demo.dto.UserDTO;
+import com.example.demo.model.Roles;
 import com.example.demo.model.User;
 import com.example.demo.security.authentication.JwtUtil;
 import com.example.demo.service.PersonService;
@@ -37,19 +38,20 @@ public class AuthenticatedUserController {
         try{
             user.setUsername(userService.getAuthenticatedUser(userLogin.getUsername(), userLogin.getPassword()).getUsername());
             user.setPassword(userService.getAuthenticatedUser(userLogin.getUsername(), userLogin.getPassword()).getPassword());
+            user.setRoles(userService.getAuthenticatedUser(userLogin.getUsername(), userLogin.getPassword()).getRoles());
             userDTO.setToken(jwtUtil.generateToken(user.getUsername(),user.getRoles()));
             userDTO.setMessage("Login successful");
             return ResponseEntity.status(HttpStatus.OK).body(userDTO);
         }catch (Exception e){
-            userDTO.setMessage("Login failed");
+            userDTO.setMessage(e.getMessage());
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(userDTO);
         }
     }
-    /*
+
     @PostMapping("/denemeAuth")
     public User denemeAuth(@RequestBody LoginDTO userLogin){
         return userService.getAuthenticatedUser(userLogin.getUsername(), userLogin.getPassword());
     }
 
-     */
+
 }

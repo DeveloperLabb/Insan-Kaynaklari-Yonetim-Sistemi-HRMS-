@@ -156,5 +156,36 @@ function hideOverlay() {
     document.body.style.overflow = '';
     location.reload();
 }
+function login(){
+    var usernameValue = document.getElementById('username').value;
+    var passwordValue = document.getElementById('password').value;
+    // POST isteği gönderme
+    fetch(`http://localhost:8080/login`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json' // Gönderilen verinin formatını belirtir
+        },
+        body: JSON.stringify({ username: usernameValue, password: passwordValue }) // JSON formatında veri gönderir
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    // Sunucudan dönen hata mesajını işleme
+                    throw new Error(errorData.message || 'Network response was not ok');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Örneğin token'ı saklayabilirsiniz
+            localStorage.setItem('token', data.token);
+            console.log(data)
+            // Başarılı olduğunda yönlendirme yap
+            window.location.href = '/dashboard';
+        })
+        .catch(error => {
+            alert(error.message);
+        });
+}
 
 
