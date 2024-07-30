@@ -19,7 +19,9 @@ import static org.springframework.http.ResponseEntity.ok;
 @RestController
 @RequestMapping("/")
 public class PersonController {
+
     private final PersonService personService;
+
     @Autowired
     public PersonController(@Qualifier("personService") PersonService personService) {//Dependency injection
         this.personService = personService;

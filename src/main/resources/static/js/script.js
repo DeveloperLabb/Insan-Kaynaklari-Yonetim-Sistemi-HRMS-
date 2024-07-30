@@ -11,6 +11,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Sayfanın URL'sini kontrol et
     if (window.location.pathname === '/dashboard') {
         getPersons();
+    }else if (window.location.pathname === '/') {
+    if(localStorage.getItem("token")!==null){
+        window.location.href="/dashboard";
+        }
     }
 });
 

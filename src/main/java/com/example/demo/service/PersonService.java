@@ -12,19 +12,23 @@ import java.util.UUID;
 @Service
 public class PersonService {
 
+    private final AuthenticationService authenticationService;
+
     private final PersonRepository personRepository;
 
     @Autowired
-    public PersonService(PersonRepository personRepository) {
+    public PersonService(PersonRepository personRepository, AuthenticationService authenticationService) {
         this.personRepository = personRepository;
+        this.authenticationService = authenticationService;
     }
 
     public Optional<Person> savePerson(Person person) {
+        person.setOwnerID(authenticationService.getCurrentUser().getId().toString());
         return Optional.of(personRepository.save(person));
     }
 
     public Optional<List<Person>> getAllPersons() {
-        return Optional.of(personRepository.findAll());
+        return Optional.of(personRepository.findByOwnerID(authenticationService.getCurrentUser().getId().toString()));
     }
 
     public Optional<Person> getPersonById(UUID id) {
@@ -39,6 +43,7 @@ public class PersonService {
 
     public Optional<Person> updatePerson(UUID id, Person person) {
         if (personRepository.existsById(id)) {
+            person.setOwnerID(authenticationService.getCurrentUser().getId().toString());
             person.setId(id);
             return Optional.of(personRepository.save(person));
         }
