@@ -1,128 +1,98 @@
 var table;
 var idToUpdate;
 var iframeDocument;
-document.addEventListener("DOMContentLoaded", function() {
-    getPersons();
+
+// iframe içeriği yüklendiğinde çalışacak fonksiyon
+function onIframeLoad() {
+    iframeDocument = document.getElementById('update-iframe').contentDocument;
+    console.log('iframe içeriği yüklendi.');
+}
+document.addEventListener('DOMContentLoaded', function() {
+    // Sayfanın URL'sini kontrol et
+    if (window.location.pathname === '/dashboard') {
+        getPersons();
+    }
 });
+
+// DOMContentLoaded olayında iframe yükleme olayını bağlayın
 document.addEventListener('DOMContentLoaded', function() {
     var iframe = document.getElementById('update-iframe');
-    iframe.onload = function() {
-        console.log('iframe içeriği yüklendi.');
-    };
+    iframe.addEventListener('load', onIframeLoad);
 });
-function getPersons() {
-    fetch('http://localhost:8080/api/v1/person/getAllPerson', {
-        method: 'GET'
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok ' + response.statusText);
-            }
-            return response.json();
-        })
-        .then(data => {
-            // JSON dizisini işleme
-            const jsonArray = data;
-            // `personTable`'ın `tbody` öğesini seçme
-            const personDataList = document.querySelector("#personTable > tbody");
 
-            // Tabloyu temizleme (isteğe bağlı)
-            personDataList.innerHTML = '';
-
-            // Verileri tabloya ekleme
-            jsonArray.forEach(person => {
-                // Yeni bir `tr` elementi oluşturma
-                const tr = document.createElement('tr');
-
-                // `name` ve `id` için `td` elementleri oluşturma
-                const td1 = document.createElement('td');
-                td1.textContent = person.name;
-                tr.appendChild(td1);
-
-                const td2 = document.createElement('td');
-                td2.textContent = person.id;
-                tr.appendChild(td2);
-
-                // `tr` elementini `tbody`'ye ekleme
-                personDataList.appendChild(tr);
-            });
-
-            // DataTables'ı başlatma
-            table = $('#personTable').DataTable({
-                select: {
-                    style: 'single' // Çoklu seçim modunu etkinleştirir
-                }
-            })
-        })
-        .catch(error => {
-            console.error('Error:', error); // Hata mesajını konsola yazdır
-        });
-}
 
 function addPerson() {
-    // Input elemanını seçme
+    const token = localStorage.getItem('token');
     var nameInput = document.getElementById('textField-ekle');
-    // Input'un değerini alma
     var nameValue = nameInput.value;
 
-    // Input'un boş olup olmadığını kontrol etme
     if (nameValue.trim() === "") {
         alert('Name cannot be blank');
-        return; // Boşsa işlemi durdur
+        return;
     }
-    // Fetch ile POST isteği gönderme
-    fetch('http://localhost:8080/api/v1/person/addPerson', {
+
+    fetch('http://localhost:8080/addPerson', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json' // Gönderilen verinin formatını belirtir
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ name: nameValue }) // JSON formatında veri gönderir
+        body: JSON.stringify({ name: nameValue })
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error('Network response was not ok');
-        }
-        return response.json();
-    })
-    .then(data => {
-        console.log(data); // Veriyi işleyin
-        alert(`${nameValue} kullanıcısı başarıyla eklendi.`);
-        // DataTables'ı başlatma
-        document.getElementById('textField-ekle').value="";
-        location.reload();
-    })
-    .catch(error => {
-        console.error('There was a problem with the fetch operation:', error);
-    });
-}
-function deletePerson(){
-        // Seçili satırların sayısını al
-        var selectedRowsCount = table.rows({ selected: true }).count();
-        
-        // Eğer seçili satır yoksa uyarı göster
-        if (selectedRowsCount === 0) {
-            alert("Öncelikle silinecek satırı seçiniz.");
-            return; // İşlemi durdur
-        }
-
-        // Seçili satırın verilerini al
-        var selectedRowData = table.row({ selected: true }).data();
-        var id = selectedRowData[1]; // ID sütunundan alınır
-
-        // DELETE isteği gönderme
-        fetch(`http://localhost:8080/api/v1/person/${id}`, {
-            method: 'DELETE'
-        })
         .then(response => {
             if (!response.ok) {
+                if (response.status === 403) {
+                    alert('Unauthorized access. Redirecting to the home page in 3s.');
+                    setTimeout(3000);
+                    window.location.href="/";
+                }
                 throw new Error('Network response was not ok');
             }
             return response.json();
         })
         .then(data => {
-            console.log(data); // Veriyi işleyin
+            console.log(data);
+            alert(`${nameValue} kullanıcısı başarıyla eklendi.`);
+            document.getElementById('textField-ekle').value = "";
+            location.reload();
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+
+function deletePerson() {
+    const token = localStorage.getItem('token');
+    var selectedRowsCount = table.rows({ selected: true }).count();
+
+    if (selectedRowsCount === 0) {
+        alert("Öncelikle silinecek satırı seçiniz.");
+        return;
+    }
+
+    var selectedRowData = table.row({ selected: true }).data();
+    var id = selectedRowData[1];
+
+    fetch(`http://localhost:8080/delete/${id}`, {
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 403) {
+                    alert('Unauthorized access. Redirecting to the home page in 3s.');
+                    setTimeout(3000);
+                    window.location.href="/";
+                }
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log(data);
             alert(`${id} kullanıcısı başarıyla silindi.`);
-            // Satırı tablodan kaldır
             table.row({ selected: true }).remove().draw();
         })
         .catch(error => {
@@ -131,24 +101,26 @@ function deletePerson(){
 }
 
 function showOverlay() {
-    // Seçili satırların sayısını al
     var selectedRowsCount = table.rows({ selected: true }).count();
-    // Eğer seçili satır yoksa uyarı göster
     if (selectedRowsCount === 0) {
         alert("Öncelikle güncellenecek satırı seçiniz.");
-        return; // İşlemi durdur
+        return;
     }
     var selectedRowData = table.row({ selected: true }).data();
-    var name = selectedRowData[0];// name 
-    var id = selectedRowData[1]; // ID sütunundan alınır
-    idToUpdate=id;
+    var name = selectedRowData[0];
+    var id = selectedRowData[1];
+    idToUpdate = id;
+    // iframe içeriğinin yüklendiğini kontrol edin
     var iframe = document.getElementById('update-iframe');
-    iframeDocument = iframe.contentDocument;
-    iframeDocument.getElementById("update-person-info-name").textContent = `${name}` ;
-    iframeDocument.getElementById("update-person-info-id").textContent = `${id}` ;
-    document.getElementById('overlay').style.display = 'flex';
-    document.body.style.overflow = 'hidden';
-    
+    if (iframeDocument) {
+        iframeDocument.getElementById("update-person-info-name").textContent = `${name}`;
+        iframeDocument.getElementById("update-person-info-id").textContent = `${id}`;
+        document.getElementById('overlay').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    } else {
+        // iframe içeriği henüz yüklenmemişse hata mesajı veya yüklenene kadar bekleme
+        alert('Iframe içeriği henüz yüklenmedi.');
+    }
 }
 
 function hideOverlay() {
@@ -156,36 +128,82 @@ function hideOverlay() {
     document.body.style.overflow = '';
     location.reload();
 }
-function login(){
+
+function login() {
+    if(localStorage.getItem('token') !== null) {
+
+    }
     var usernameValue = document.getElementById('username').value;
     var passwordValue = document.getElementById('password').value;
-    // POST isteği gönderme
-    fetch(`http://localhost:8080/login`, {
+
+    fetch('http://localhost:8080/login', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json' // Gönderilen verinin formatını belirtir
+            'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ username: usernameValue, password: passwordValue }) // JSON formatında veri gönderir
+        body: JSON.stringify({ username: usernameValue, password: passwordValue })
     })
         .then(response => {
             if (!response.ok) {
                 return response.json().then(errorData => {
-                    // Sunucudan dönen hata mesajını işleme
                     throw new Error(errorData.message || 'Network response was not ok');
                 });
             }
             return response.json();
         })
         .then(data => {
-            // Örneğin token'ı saklayabilirsiniz
             localStorage.setItem('token', data.token);
-            console.log(data)
-            // Başarılı olduğunda yönlendirme yap
+            console.log(data);
             window.location.href = '/dashboard';
         })
         .catch(error => {
             alert(error.message);
         });
 }
+function getPersons() {
+    const token = localStorage.getItem('token');
+    fetch('http://localhost:8080/dashboard/getAllPerson', {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 403) {
+                    alert('Unauthorized access. Redirecting to the home page in 3s.');
+                    setTimeout(3000);
+                    window.location.href="/";
+                }
+            }
+            return response.json();
+        })
+        .then(data => {
+            const jsonArray = data;
+            const personDataList = document.querySelector("#personTable > tbody");
 
+            personDataList.innerHTML = '';
 
+            jsonArray.forEach(person => {
+                const tr = document.createElement('tr');
+                const td1 = document.createElement('td');
+                td1.textContent = person.name;
+                tr.appendChild(td1);
+
+                const td2 = document.createElement('td');
+                td2.textContent = person.id;
+                tr.appendChild(td2);
+
+                personDataList.appendChild(tr);
+            });
+
+            table = $('#personTable').DataTable({
+                select: {
+                    style: 'single'
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}

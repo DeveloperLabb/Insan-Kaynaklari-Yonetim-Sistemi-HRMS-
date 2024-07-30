@@ -17,7 +17,7 @@ import static org.springframework.http.ResponseEntity.ok;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("api/v1/person")
+@RequestMapping("/")
 public class PersonController {
     private final PersonService personService;
     @Autowired
@@ -31,7 +31,7 @@ public class PersonController {
         return savedPerson.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.badRequest().build());
     }
 
-    @GetMapping("/getAllPerson")//Aynı endpoint üzerinden farklı mapping işlemleri yapılabilir ancak aynı işlemler aynı endpointte yapılamaz.
+    @PostMapping("dashboard/getAllPerson")//Aynı endpoint üzerinden farklı mapping işlemleri yapılabilir ancak aynı işlemler aynı endpointte yapılamaz.
     public ResponseEntity<List<Person>> getAllPerson() {
         Optional<List<Person>> personList = personService.getAllPersons();
         if (personList.isPresent()) {
@@ -39,12 +39,12 @@ public class PersonController {
         }
         return ResponseEntity.noContent().build();
     }
-    @DeleteMapping("/{id}")
+    @DeleteMapping("delete/{id}")
     public ResponseEntity<Person> deletePerson(@PathVariable("id") UUID id) {
         Optional<Person> deletedPerson = personService.deletePerson(id);
         return deletedPerson.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
-    @PutMapping("/{id}")
+    @PutMapping("update/{id}")
     public ResponseEntity<Person> updatePerson(@PathVariable("id") UUID id, @Valid @NonNull @RequestBody Person person) {
         Optional<Person> updatedPerson = personService.updatePerson(id, person);
         return updatedPerson.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());

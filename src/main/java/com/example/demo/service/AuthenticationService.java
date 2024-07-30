@@ -1,32 +1,49 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.LoginDTO;
-import com.example.demo.dto.UserDTO;
+import com.example.demo.dto.AuthenticationResponse;
 import com.example.demo.model.User;
+import com.example.demo.repository.UserRepository;
 import com.example.demo.security.authentication.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Optional;
 
 @Service
 public class AuthenticationService {
-
-    private final User user;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
+    private final AuthenticationManager authenticationManager;
 
     @Autowired
-    public AuthenticationService(User user) {
-        this.user = user;
+    public AuthenticationService(UserRepository userRepository, PasswordEncoder passwordEncoder, JwtUtil jwtUtil, AuthenticationManager authenticationManager) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+        this.jwtUtil = jwtUtil;
+        this.authenticationManager = authenticationManager;
     }
 
-    //Controller sınıflarda autowired yapıp içlerinde token kontrolü yapıp ona göre Response atacağız.
-    public boolean isAuthenticatedUser(UserDTO userDTO){
-        if(userDTO.getToken().isBlank() || userDTO.getToken().equals(null)){
-            return false;
-        }
-        else{
-            if(JwtUtil.validateToken(userDTO.getToken(),user.getUsername())){
-                return true;
-            }
-            return false;
-        }
+
+
+    public AuthenticationResponse register(User request) {
+        User user = new User();
+        user.setUsername(request.getUsername());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(request.getRole());
+        user= userRepository.save(user);
+        String token = jwtUtil.generateToken(user);
+        return new AuthenticationResponse(token);
+    }
+    public AuthenticationResponse authenticate(User request) {
+        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                request.getUsername(), request.getPassword()));
+        User user  = userRepository.findByUsername(request.getUsername()).orElseThrow();
+        String token = jwtUtil.generateToken(user);
+        return new AuthenticationResponse(token);
     }
 }
