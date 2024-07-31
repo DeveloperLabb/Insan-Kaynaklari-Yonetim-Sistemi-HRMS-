@@ -45,8 +45,11 @@ function addPerson() {
     })
         .then(response => {
             if (!response.ok) {
-                if (response.status === 403) {
-                    alert('Unauthorized access. Redirecting to the home page in 3s.');
+                if (response.status === 403 || response.status === 401) {
+                    alert('Unauthorized access. Redirecting to the login page in 3s.');
+                    if(localStorage.getItem('token') !== null) {
+                        localStorage.removeItem('token');
+                    }
                     setTimeout(3000);
                     window.location.href="/";
                 }
@@ -85,8 +88,11 @@ function deletePerson() {
     })
         .then(response => {
             if (!response.ok) {
-                if (response.status === 403) {
-                    alert('Unauthorized access. Redirecting to the home page in 3s.');
+                if (response.status === 403 || response.status === 401) {
+                    alert('Unauthorized access. Redirecting to the login page in 3s.');
+                    if(localStorage.getItem('token') !== null) {
+                        localStorage.removeItem('token');
+                    }
                     setTimeout(3000);
                     window.location.href="/";
                 }
@@ -174,8 +180,11 @@ function getPersons() {
     })
         .then(response => {
             if (!response.ok) {
-                if (response.status === 403) {
-                    alert('Unauthorized access. Redirecting to the home page in 3s.');
+                if (response.status === 403 || response.status === 401) {
+                    alert('Unauthorized access. Redirecting to the login page in 3s.');
+                    if(localStorage.getItem('token') !== null) {
+                        localStorage.removeItem('token');
+                    }
                     setTimeout(3000);
                     window.location.href="/";
                 }
@@ -211,3 +220,38 @@ function getPersons() {
             console.error('Error:', error);
         });
 }
+function logout() {
+    const token = localStorage.getItem('token');
+
+
+    fetch(`http://localhost:8080/log-out`, {
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${token}`
+        }
+    })
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 403 || response.status === 401) {
+                    alert('Unauthorized access. Redirecting to the login page in 3s.');
+                    if(localStorage.getItem('token') !== null) {
+                        localStorage.removeItem('token');
+                    }
+                    setTimeout(3000);
+                    window.location.href="/";
+                }
+                throw new Error('Network response was not ok');
+            }
+            if(localStorage.getItem('token') !== null) {
+                localStorage.removeItem('token');
+                alert('Logged out.Redirecting to the login page in 3s.');
+                setTimeout(3000);
+                window.location.href="/";
+            }
+        })
+        .catch(error => {
+            console.error('There was a problem with the fetch operation:', error);
+        });
+}
+
+

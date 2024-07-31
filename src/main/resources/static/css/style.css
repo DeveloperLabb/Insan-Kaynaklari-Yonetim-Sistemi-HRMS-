@@ -5,7 +5,7 @@
 .shadow-hover:hover {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Gölge efekti */
 }
-.container-fluid .col-sm-9,.container-fluid .col-sm-3{
+.container-fluid .col-sm-9,.container-fluid .col-sm-3,.container-fluid .col-sm-8,.container-fluid .col-sm-1 {
     border: 2px solid white;
     border-radius: 10px;
 }
