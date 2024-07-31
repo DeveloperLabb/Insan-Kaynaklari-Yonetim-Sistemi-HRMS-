@@ -25,4 +25,10 @@ public class WebController {
         modelAndView.setViewName("/html/login"); // Görünüm adını ayarla
         return modelAndView;
     }
+    @GetMapping("/register")
+    public ModelAndView registerPage() {
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("/html/register"); // Görünüm adını ayarla
+        return modelAndView;
+    }
 }

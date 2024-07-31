@@ -12,8 +12,8 @@ document.addEventListener('DOMContentLoaded', function() {
     if (window.location.pathname === '/dashboard') {
         getPersons();
     }else if (window.location.pathname === '/') {
-    if(localStorage.getItem("token")!==null){
-        window.location.href="/dashboard";
+        if(localStorage.getItem("token")!==null){
+            window.location.href="/dashboard";
         }
     }
 });
@@ -140,11 +140,13 @@ function hideOverlay() {
 }
 
 function login() {
-    if(localStorage.getItem('token') !== null) {
-
-    }
     var usernameValue = document.getElementById('username').value;
     var passwordValue = document.getElementById('password').value;
+
+    if (!usernameValue.trim() || !passwordValue.trim()) {
+        alert("Username or password cannot be null.");
+        return;
+    }
 
     fetch('http://localhost:8080/login', {
         method: 'POST',
@@ -155,9 +157,8 @@ function login() {
     })
         .then(response => {
             if (!response.ok) {
-                return response.json().then(errorData => {
-                    throw new Error(errorData.message || 'Network response was not ok');
-                });
+                throw new Error('Kullanıcı adı veya şifre hatalı.');
+                return;
             }
             return response.json();
         })
@@ -252,6 +253,64 @@ function logout() {
         .catch(error => {
             console.error('There was a problem with the fetch operation:', error);
         });
+}
+function register() {
+    var usernameValue = document.getElementById('username').value;
+    var passwordValue = document.getElementById('password').value;
+    var roleValue = document.getElementById('role_select').value;
+
+    if (!usernameValue.trim() || !passwordValue.trim()) {
+        alert("Username or password cannot be null.");
+        return;
+    }
+    const lengthRegex = /^.{8,20}$/; // Parola uzunluğu 8-20 karakter arasında olmalı
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?!.*\s)[A-Za-z\d]+$/;
+
+
+    if (!lengthRegex.test(passwordValue)) {
+        alert("Password must be 8-20 characters long.");
+        return;
+    }
+
+    if (!passwordRegex.test(passwordValue)) {
+        alert("Password must contain at least one uppercase letter and one number, and must not contain spaces.");
+        return;
+    }
+    if(roleValue === "NULL"){
+        alert("Role must be chosen");
+        return;
+    }
+    if(roleValue !== "ADMIN" && roleValue !== "USER"){
+        alert("Invalid role");
+        return;
+    }
+
+    fetch('http://localhost:8080/user/register', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username: usernameValue, password: passwordValue, role: roleValue})
+    })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(usernameValue+' kullanıcı adına sahip kullanıcı var.');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            localStorage.setItem('token', data.token);
+            window.location.href = '/dashboard';
+        })
+        .catch(error => {
+            alert(error.message);
+            return;
+        });
+}
+function redirectToRegister(){
+    window.location.href="/register";
 }
 
 

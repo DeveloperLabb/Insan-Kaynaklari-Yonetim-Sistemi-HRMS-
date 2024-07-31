@@ -39,7 +39,7 @@ public class SecurityConfig {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(
-                        req-> req.requestMatchers("/login/**","/register/**","/","/dashboard")
+                        req-> req.requestMatchers("/login/**","/register/**","/","/dashboard","/register","user/register")
                                 .permitAll()
                                 .requestMatchers("/css/**", "/js/**", "/html/**") // Statik kaynak yolları
                                 .permitAll()

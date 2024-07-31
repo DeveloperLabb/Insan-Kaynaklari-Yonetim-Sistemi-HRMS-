@@ -6,6 +6,7 @@ import com.example.demo.service.AuthenticationService;
 import com.example.demo.service.BlacklistService;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,11 +24,16 @@ public class AuthenticationController {
         this.authenticationService = authenticationService;
         this.blacklistService = blacklistService;
     }
-    @PostMapping("/register")
+    @PostMapping("user/register")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody User request
             )  {
-        return ResponseEntity.ok(authenticationService.register(request));
+        try{
+            return ResponseEntity.ok(authenticationService.register(request));
+        }catch (Exception e){
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(new AuthenticationResponse(e.getMessage()));
+        }
+
     }
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(

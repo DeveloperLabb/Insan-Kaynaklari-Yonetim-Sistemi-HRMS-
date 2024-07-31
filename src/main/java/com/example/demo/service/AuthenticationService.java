@@ -33,6 +33,9 @@ public class AuthenticationService {
 
 
     public AuthenticationResponse register(User request) {
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new RuntimeException("Username already exists.");
+        }
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
