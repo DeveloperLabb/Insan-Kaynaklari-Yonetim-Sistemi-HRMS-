@@ -8,7 +8,6 @@ function onIframeLoad() {
     console.log('iframe içeriği yüklendi.');
 }
 document.addEventListener('DOMContentLoaded', function() {
-    // Sayfanın URL'sini kontrol et
     if (window.location.pathname === '/dashboard') {
         getPersons();
     }else if (window.location.pathname === '/') {
@@ -195,7 +194,7 @@ function getPersons() {
         .then(data => {
             const jsonArray = data;
             const personDataList = document.querySelector("#personTable > tbody");
-
+            var isDone=false;
             personDataList.innerHTML = '';
 
             jsonArray.forEach(person => {
@@ -207,6 +206,19 @@ function getPersons() {
                 const td2 = document.createElement('td');
                 td2.textContent = person.id;
                 tr.appendChild(td2);
+
+                if (/[a-zA-Z]/.test(person.ownerID)){
+                    if(!isDone){
+                        const th = document.createElement('th');
+                        th.textContent="Owner";
+                        document.getElementById('dataTableHeadingRow').appendChild(th);
+                        isDone=true;
+                    }
+                    const td3 = document.createElement('td');
+                    td3.textContent = person.ownerID;
+                    tr.appendChild(td3);
+                }
+
 
                 personDataList.appendChild(tr);
             });
