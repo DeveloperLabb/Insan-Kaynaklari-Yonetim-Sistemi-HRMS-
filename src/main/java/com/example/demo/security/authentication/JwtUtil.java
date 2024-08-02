@@ -74,10 +74,18 @@ public class JwtUtil {
     }
     // JWT geçerliliğini kontrol etme
     public boolean isTokenExpired(String token) {
-        return extractExpiration(token).before(new Date());
+        try{
+            return extractExpiration(token).before(new Date());
+        }catch(ExpiredJwtException e){
+            return true;
+        }
+
     }
     private Date extractExpiration(String token) {
         return extractClaim(token,Claims::getExpiration);
     }
 
+    public Date getEXPIRATION_TIME() {
+        return EXPIRATION_TIME;
+    }
 }

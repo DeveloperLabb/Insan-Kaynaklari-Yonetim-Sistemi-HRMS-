@@ -23,6 +23,26 @@ document.addEventListener('DOMContentLoaded', function() {
     iframe.addEventListener('load', onIframeLoad);
 });
 
+document.addEventListener('DOMContentLoaded', () => {
+    // Sayfanın URL'sini kontrol et
+    if (document.location.pathname === '/') {
+        const button = document.getElementById('loginButton');
+
+        // Tüm belge üzerinde keydown olayını dinle
+        document.addEventListener('keydown', (event) => {
+            // Eğer basılan tuş Enter ise
+            if (event.key === 'Enter') {
+                event.preventDefault(); // Varsayılan davranışı engelle (örneğin, form gönderimini)
+                if (button) {
+                    button.click(); // Butona tıklama olayını tetikle
+                }
+            }
+        });
+    }
+});
+
+
+
 
 function addPerson() {
     const token = localStorage.getItem('token');
