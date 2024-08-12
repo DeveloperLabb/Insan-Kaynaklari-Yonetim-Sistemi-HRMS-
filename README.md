@@ -27,8 +27,7 @@ Implemented with Spring Security.
 Secure login and role management for all users.
 ## Technologies Used
 ### Backend
-Java Spring Boot
-Spring Security
+Java Spring Boot, Spring Security
 ### Frontend
 HTML, CSS, Bootstrap 
 JavaScript, JQuery
